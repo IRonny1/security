@@ -9,7 +9,6 @@ const roleMiddleware = require("../middlewares/roleMiddleware");
 
 router.get("/users", roleMiddleware([ADMIN]), controller.getAllUsers);
 router.get("/:userId", authMiddleware, controller.getUserById);
-router.get("/:userId/roles", authMiddleware, controller.getUserRoles);
 router.post("/signUp", controller.signUp);
 router.post("/signIn", controller.signIn);
 

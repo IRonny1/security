@@ -1,8 +1,11 @@
 require("dotenv").config();
 
 const express = require("express");
-const { port, dbUri } = require("./config");
+const cors = require("cors");
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+
+const { port, dbUri } = require("./config");
 
 const app = express();
 
@@ -10,6 +13,8 @@ const user = require("./src/routers/userRoute");
 const role = require("./src/routers/roleRoute");
 
 app.use(express.json());
+app.use(cookieParser());
+app.use(cors());
 
 // SERVER
 
