@@ -4,6 +4,7 @@ const User = require("../models/User");
 const UserDto = require("../dtos/UserDto");
 const userValidationService = require("../services/UserValidationService");
 const tokenService = require("./TokenService");
+const HttpError = require("../exceptions/HttpError");
 
 class UserService {
   async getAllUsers() {
@@ -21,7 +22,7 @@ class UserService {
     const tempUser = await User.findOne({ email: email });
 
     if (tempUser) {
-      throw new Error("User with this email already exist.");
+      throw HttpError.BadRequest("User with this email already exist.");
     }
 
     if (userValidationService.isSignUpDataValid(body)) {
@@ -40,7 +41,7 @@ class UserService {
 
       return { ...tokens, user: userDto };
     } else {
-      throw new Error("Data is incorrect");
+      throw HttpError.BadRequest("Data is incorrect");
     }
   }
 
@@ -50,13 +51,13 @@ class UserService {
     const user = await User.findOne({ email: email });
 
     if (!user) {
-      throw new Error("User not found.");
+      throw HttpError.BadRequest("User not found.");
     }
 
     const isPasswordValid = bcrypt.compareSync(password, user.password);
 
     if (!isPasswordValid) {
-      throw new Error("Incorrect password.");
+      throw HttpError.BadRequest("Incorrect password.");
     }
 
     const { refreshToken } = tokenService.generateTokens({

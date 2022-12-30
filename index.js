@@ -12,9 +12,12 @@ const app = express();
 const user = require("./src/routers/userRoute");
 const role = require("./src/routers/roleRoute");
 
+const errorMiddleware = require("./src/middlewares/errorMiddleware");
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
+app.use(errorMiddleware);
 
 // SERVER
 
