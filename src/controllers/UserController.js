@@ -25,12 +25,12 @@ class UserController {
     try {
       const userData = await userService.signUp(req.body);
 
-      res.cookie("refreshToken", userData.accessToken, {
+      res.cookie("refreshToken", userData.refreshToken, {
         maxAge: DAYS_30,
         httpOnly: true,
       });
 
-      return res.json({ token: userData.refreshToken, user: userData.user });
+      return res.json({ token: userData.accessToken, user: userData.user });
     } catch (e) {
       next(e);
     }
@@ -38,8 +38,41 @@ class UserController {
 
   async signIn(req, res, next) {
     try {
-      const token = await userService.signIn(req.body);
-      return res.json({ token: token });
+      const { accessToken, refreshToken } = await userService.signIn(req.body);
+
+      res.cookie("refreshToken", refreshToken, {
+        maxAge: DAYS_30,
+        httpOnly: true,
+      });
+
+      return res.json({ token: accessToken });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async logOut(req, res, next) {
+    try {
+      const { refreshToken } = req.cookies;
+      const token = await userService.logOut(refreshToken);
+      res.clearCookie("refreshToken");
+      return res.send(token);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async refreshUserToken(req, res, next) {
+    try {
+      const { refreshToken } = req.cookies;
+      const user = await userService.refreshUserToken(refreshToken);
+
+      res.cookie("refreshToken", user.refreshToken, {
+        maxAge: DAYS_30,
+        httpOnly: true,
+      });
+
+      return res.json(user);
     } catch (e) {
       next(e);
     }

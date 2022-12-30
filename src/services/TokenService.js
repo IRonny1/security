@@ -1,12 +1,12 @@
 const jwt = require("jsonwebtoken");
 
 const Token = require("../models/Token");
-const { secretToken } = require("../../config");
+const { accessSecret, refreshSecret } = require("../../config");
 
 class TokenService {
   generateTokens(payload) {
-    const accessToken = jwt.sign(payload, secretToken, { expiresIn: "1h" });
-    const refreshToken = jwt.sign(payload, secretToken, { expiresIn: "1h" });
+    const accessToken = jwt.sign(payload, accessSecret, { expiresIn: "1h" });
+    const refreshToken = jwt.sign(payload, refreshSecret, { expiresIn: "1h" });
 
     return { accessToken, refreshToken };
   }
@@ -20,6 +20,22 @@ class TokenService {
     }
 
     return await Token.create({ userId: userId, refreshToken: refreshToken });
+  }
+
+  async findToken(token) {
+    return Token.findOne({ token });
+  }
+
+  async removeToken(refreshToken) {
+    return Token.deleteOne({ refreshToken });
+  }
+
+  validateAccessToken(token) {
+    return jwt.verify(token, accessSecret);
+  }
+
+  validateRefreshToken(token) {
+    return jwt.verify(token, refreshSecret);
   }
 }
 

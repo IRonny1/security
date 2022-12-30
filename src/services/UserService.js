@@ -60,12 +60,42 @@ class UserService {
       throw HttpError.BadRequest("Incorrect password.");
     }
 
-    const { refreshToken } = tokenService.generateTokens({
+    const { accessToken, refreshToken } = tokenService.generateTokens({
       userId: user.userId,
       roles: user.roles,
     });
 
-    return refreshToken;
+    return { accessToken, refreshToken };
+  }
+
+  async logOut(refreshToken) {
+    return await tokenService.removeToken(refreshToken);
+  }
+
+  async refreshUserToken(refreshToken) {
+    if (!refreshToken) {
+      throw HttpError.UnauthorizedAccess();
+    }
+
+    const userData = tokenService.validateRefreshToken(refreshToken);
+
+    if (!userData) {
+      throw HttpError.UnauthorizedAccess();
+    }
+
+    const dbToken = await tokenService.findToken(refreshToken);
+
+    if (!dbToken) {
+      throw HttpError.UnauthorizedAccess();
+    }
+
+    const user = await User.findOne({ userId: userData.userId });
+    const userDto = new UserDto(user);
+    const tokens = tokenService.generateTokens({ ...userDto });
+
+    await tokenService.saveToken(userDto.userId, tokens.refreshToken);
+
+    return { ...tokens, user: userDto };
   }
 }
 
