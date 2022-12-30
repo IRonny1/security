@@ -9,12 +9,16 @@ module.exports = function (req, res, next) {
     next();
   }
 
-  const token = req.headers.authorization.split(" ")[1];
-  if (!token) {
-    throw HttpError.UnauthorizedAccess();
+  try {
+    const token = req.headers.authorization.split(" ")[1];
+    if (!token) {
+      return next(HttpError.UnauthorizedAccess());
+    }
+
+    req.user = jwt.verify(token, accessSecret);
+
+    next();
+  } catch (e) {
+    next(HttpError.UnauthorizedAccess());
   }
-
-  req.user = jwt.verify(token, accessSecret);
-
-  next();
 };
