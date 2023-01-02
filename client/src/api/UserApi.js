@@ -12,6 +12,9 @@ const UserApi = {
   userLogout() {
     return authorizedAxios.get(`/api/user/logout`);
   },
+  userSignUp(data) {
+    return axios.post("/api/user/signUp", data);
+  },
 };
 
 export default UserApi;
