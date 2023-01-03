@@ -5,6 +5,10 @@ const UserDto = require("../dtos/UserDto");
 const userValidationService = require("../services/UserValidationService");
 const tokenService = require("./TokenService");
 const HttpError = require("../exceptions/HttpError");
+const { OAuth2Client } = require("google-auth-library");
+const { clientId } = require("../../config");
+
+const googleClient = new OAuth2Client({ clientId: clientId });
 
 class UserService {
   async getAllUsers() {
@@ -43,6 +47,36 @@ class UserService {
     } else {
       throw HttpError.BadRequest("Data is incorrect");
     }
+  }
+
+  async signUnWithGoogleOAuth(token) {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: `${clientId}`,
+    });
+
+    if (!ticket) {
+      throw HttpError.BadRequest("Token are not valid");
+    }
+
+    const payload = ticket.getPayload();
+
+    const tempUser = await User.findOne({ email: payload?.email });
+
+    if (tempUser) {
+      throw HttpError.BadRequest("User with this email already exist.");
+    }
+
+    const user = await User.create({
+      userId: uuidv4(),
+      email: payload?.email,
+      firstName: payload?.firstName,
+      lastName: payload?.lastName,
+      password: bcrypt.hashSync(uuidv4(), 10),
+      roles: ["USER"],
+    });
+
+    return new UserDto(user);
   }
 
   async signIn(body) {

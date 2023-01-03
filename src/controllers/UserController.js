@@ -45,6 +45,18 @@ class UserController {
     }
   }
 
+  async signUnWithGoogleOAuth(req, res, next) {
+    try {
+      const { token } = req.body;
+
+      const user = await userService.signUnWithGoogleOAuth(token);
+
+      return res.json({ user, token });
+    } catch (e) {
+      next(e);
+    }
+  }
+
   async signIn(req, res, next) {
     try {
       const { accessToken, refreshToken } = await userService.signIn(req.body);
