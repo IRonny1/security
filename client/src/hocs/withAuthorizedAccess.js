@@ -1,6 +1,6 @@
 import { useRecoilValue } from "recoil";
 
-import Login from "../pages/Login/Login";
+import Auth from "../pages/Auth/Auth";
 import userState from "../state/userState";
 
 export default function withAuthorizedAccess(Component) {
@@ -8,7 +8,7 @@ export default function withAuthorizedAccess(Component) {
     const user = useRecoilValue(userState);
 
     if (!user) {
-      return <Login />;
+      return <Auth />;
     }
 
     return <Component />;

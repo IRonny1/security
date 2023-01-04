@@ -45,7 +45,7 @@ class UserController {
     }
   }
 
-  async signUnWithGoogleOAuth(req, res, next) {
+  async signUpWithGoogleOAuth(req, res, next) {
     try {
       const { token } = req.body;
 
@@ -60,6 +60,24 @@ class UserController {
   async signIn(req, res, next) {
     try {
       const { accessToken, refreshToken } = await userService.signIn(req.body);
+
+      res.cookie("refreshToken", refreshToken, {
+        maxAge: DAYS_30,
+        httpOnly: true,
+      });
+
+      return res.json({ token: accessToken });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  async signInWithGoogleOAuth(req, res, next) {
+    try {
+      const { token } = req.body;
+
+      const { accessToken, refreshToken } =
+        await userService.signInWithGoogleOAuth(token);
 
       res.cookie("refreshToken", refreshToken, {
         maxAge: DAYS_30,

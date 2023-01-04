@@ -5,7 +5,7 @@ import SignUp from "./SignUp";
 
 import "./Login.scss";
 
-function Login() {
+function Auth() {
   const [isSignIn, setIsSignIn] = useState(true);
   return (
     <div className="login-page">
@@ -20,4 +20,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Auth;

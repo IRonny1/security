@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input } from "antd";
 
@@ -5,6 +6,29 @@ import UserApi from "../../api/UserApi";
 import { removeJwtToken, setJwtToken } from "../../services/jwtTokenService";
 
 function SignIn({ setIsSignIn }) {
+  useEffect(() => {
+    /* global google */
+    google.accounts.id.initialize({
+      client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+      callback: handleGoogleAuth,
+    });
+
+    google.accounts.id.renderButton(document.getElementById("auth-btn"), {
+      theme: "outline",
+      size: "large",
+    });
+  }, []);
+
+  function handleGoogleAuth(res) {
+    UserApi.userGoogleSignIn(res.credential).then(({ data }) => {
+      if (data) {
+        setJwtToken(data.token);
+      } else {
+        removeJwtToken();
+      }
+    });
+  }
+
   const onFinish = ({ email, password }) => {
     UserApi.userLogin({ email, password }).then(({ data }) => {
       if (data) {
@@ -62,6 +86,10 @@ function SignIn({ setIsSignIn }) {
         >
           register now!
         </span>
+      </Form.Item>
+      <Form.Item>
+        <span>or login with Google</span>
+        <div id="auth-btn" />
       </Form.Item>
     </Form>
   );

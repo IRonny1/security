@@ -49,7 +49,7 @@ class UserService {
     }
   }
 
-  async signUnWithGoogleOAuth(token) {
+  async signUpWithGoogleOAuth(token) {
     const ticket = await googleClient.verifyIdToken({
       idToken: token,
       audience: `${clientId}`,
@@ -70,8 +70,8 @@ class UserService {
     const user = await User.create({
       userId: uuidv4(),
       email: payload?.email,
-      firstName: payload?.firstName,
-      lastName: payload?.lastName,
+      firstName: payload?.given_name,
+      lastName: payload?.family_name,
       password: bcrypt.hashSync(uuidv4(), 10),
       roles: ["USER"],
     });
@@ -92,6 +92,33 @@ class UserService {
 
     if (!isPasswordValid) {
       throw HttpError.BadRequest("Incorrect password.");
+    }
+
+    const { accessToken, refreshToken } = tokenService.generateTokens({
+      userId: user.userId,
+      roles: user.roles,
+    });
+
+    return { accessToken, refreshToken };
+  }
+
+  async signInWithGoogleOAuth(token) {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: `${clientId}`,
+    });
+
+    if (!ticket) {
+      throw HttpError.BadRequest("Token are not valid");
+    }
+
+    const payload = ticket.getPayload();
+    const { email } = payload;
+
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      throw HttpError.BadRequest("User not found.");
     }
 
     const { accessToken, refreshToken } = tokenService.generateTokens({

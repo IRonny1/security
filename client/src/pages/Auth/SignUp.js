@@ -1,9 +1,34 @@
+import { useEffect } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input } from "antd";
 
 import UserApi from "../../api/UserApi";
+import { removeJwtToken, setJwtToken } from "../../services/jwtTokenService";
 
 function SignUp({ setIsSignIn }) {
+  useEffect(() => {
+    /* global google */
+    google.accounts.id.initialize({
+      client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+      callback: handleGoogleAuth,
+    });
+
+    google.accounts.id.renderButton(document.getElementById("auth-btn"), {
+      theme: "outline",
+      size: "large",
+    });
+  }, []);
+
+  function handleGoogleAuth(res) {
+    UserApi.userGoogleSignUp(res.credential).then(({ data: { token } }) => {
+      if (token) {
+        setJwtToken(token);
+      } else {
+        removeJwtToken();
+      }
+    });
+  }
+
   const onFinish = (data) => {
     UserApi.userSignUp(data).then(({ status }) => {
       if (status === 200) {
@@ -65,6 +90,10 @@ function SignUp({ setIsSignIn }) {
         >
           back to login page
         </span>
+      </Form.Item>
+      <Form.Item>
+        <span>or sign up with Google</span>
+        <div id="auth-btn" />
       </Form.Item>
     </Form>
   );
