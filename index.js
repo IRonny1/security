@@ -10,6 +10,7 @@ const { port, dbUri } = require("./config");
 const app = express();
 
 const user = require("./src/routers/userRoute");
+const item = require("./src/routers/itemRoute");
 
 const errorMiddleware = require("./src/middlewares/errorMiddleware");
 
@@ -38,3 +39,4 @@ mongoose
 // ROUTES
 
 app.use("/api/user", user);
+app.use("/api/item", item);
