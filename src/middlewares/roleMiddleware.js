@@ -15,7 +15,8 @@ module.exports = function (roles) {
       throw HttpError.UnauthorizedAccess();
     }
 
-    const { roles: userRoles } = jwt.verify(token, accessSecret);
+    const user = jwt.verify(token, accessSecret);
+    const { roles: userRoles } = user;
     let hasRole = false;
     userRoles.forEach((role) => {
       if (roles.includes(role)) hasRole = true;
@@ -24,6 +25,8 @@ module.exports = function (roles) {
     if (!hasRole) {
       throw HttpError.AccessDenied();
     }
+
+    req.user = user;
 
     next();
   };

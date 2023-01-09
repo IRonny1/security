@@ -3,7 +3,7 @@ const itemService = require("../services/ItemService");
 class ItemController {
   async getAllItems(req, res, next) {
     try {
-      const items = itemService.getAllItems();
+      const items = await itemService.getAllItems();
       res.send(items);
     } catch (e) {
       next(e);
@@ -22,7 +22,7 @@ class ItemController {
 
   async createItem(req, res, next) {
     try {
-      const itemData = await itemService.createItem(req.body);
+      const itemData = await itemService.createItem(req);
       res.send(itemData);
     } catch (e) {
       next(e);

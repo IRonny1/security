@@ -1,14 +1,19 @@
 const { v4: uuidv4 } = require("uuid");
 
-const HttpError = require("../exceptions/HttpError");
-
 const Item = require("../models/Item");
+const User = require("../models/User");
 const ItemDto = require("../dtos/ItemDto");
 
 class ItemService {
   async getAllItems() {
     const items = await Item.find({});
-    return items.map((item) => new ItemDto(item));
+    const creatorIds = [...new Set(items.map(({ creatorId }) => creatorId))];
+    const users = await User.find({ userId: { $in: creatorIds } });
+    return items.map((item) => {
+      const creator = users.find(({ userId }) => userId === item.creatorId);
+      item.creator = `${creator.firstName} ${creator.lastName}`;
+      return new ItemDto(item);
+    });
   }
 
   async getItemById(itemId) {
@@ -16,12 +21,15 @@ class ItemService {
     return new ItemDto(item);
   }
 
-  async createItem({ itemName, itemDescription, creatorId }) {
-    const item = Item.create({
+  async createItem(req) {
+    const { itemName, itemDescription } = req.body;
+    const { userId } = req.user;
+
+    const item = await Item.create({
       itemId: uuidv4(),
       itemName: itemName,
       itemDescription: itemDescription,
-      creatorId: creatorId,
+      creatorId: userId,
       isItemDone: false,
     });
 
@@ -29,7 +37,7 @@ class ItemService {
   }
 
   async updateItem(itemId, newValue) {
-    const item = Item.findOneAndUpdate({ itemId }, { newValue });
+    const item = await Item.findOneAndUpdate({ itemId }, { newValue });
     return new ItemDto(item);
   }
 

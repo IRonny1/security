@@ -3,6 +3,7 @@ module.exports = class ItemDto {
   itemName;
   itemDescription;
   creatorId;
+  creator;
   isItemDone;
 
   constructor(model) {
@@ -10,6 +11,7 @@ module.exports = class ItemDto {
     this.itemName = model.itemName;
     this.itemDescription = model.itemDescription;
     this.creatorId = model.creatorId;
+    this.creator = model.creator;
     this.isItemDone = model.isItemDone;
   }
 };
