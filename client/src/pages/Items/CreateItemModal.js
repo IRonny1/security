@@ -3,13 +3,18 @@ import { useForm } from "antd/lib/form/Form";
 
 import ItemApi from "../../api/ItemApi";
 
-function CreateItemModal({ isModalOpen, setIsModalOpen, onCancel }) {
+function CreateItemModal({ isModalOpen, setIsModalOpen, setItems, onCancel }) {
   const [form] = useForm();
 
   const onFinish = (data) => {
-    ItemApi.createItem(data).then(({ status }) => {
+    ItemApi.createItem(data).then(({ status, data }) => {
       if (status === 200) {
         form.resetFields();
+        setItems((prevState) => {
+          const newState = JSON.parse(JSON.stringify(prevState));
+          newState.push(data);
+          return newState;
+        });
         setIsModalOpen(false);
       }
     });
