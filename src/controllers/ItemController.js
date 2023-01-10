@@ -31,9 +31,9 @@ class ItemController {
 
   async updateItem(req, res, next) {
     try {
-      const { body } = req;
+      const { body, user } = req;
       const { itemId } = req.params;
-      const item = await itemService.updateItem(itemId, body);
+      const item = await itemService.updateItem(user.userId, itemId, body);
 
       res.send(item);
     } catch (e) {

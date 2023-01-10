@@ -1,6 +1,10 @@
 import { Button, Space } from "antd";
 
-export const getColumns = (newItemCallback, deleteItemCallback) => [
+export const getColumns = (
+  newItemCallback,
+  completeItemCallback,
+  deleteItemCallback
+) => [
   {
     title: "Name",
     dataIndex: "itemName",
@@ -34,7 +38,12 @@ export const getColumns = (newItemCallback, deleteItemCallback) => [
     render: (_, { itemId }) => {
       return (
         <Space size="middle">
-          <span style={{ color: "#0000EE", cursor: "pointer" }}>Done</span>
+          <span
+            style={{ color: "#0000EE", cursor: "pointer" }}
+            onClick={() => completeItemCallback(itemId)}
+          >
+            Done
+          </span>
           <span
             style={{ color: "#0000EE", cursor: "pointer" }}
             onClick={() => deleteItemCallback(itemId)}

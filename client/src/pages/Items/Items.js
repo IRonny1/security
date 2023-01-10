@@ -20,11 +20,20 @@ function Items() {
     setIsModalOpen(true);
   };
 
+  const completeItem = (itemId) => {
+    ItemApi.completeItem(itemId).then(({ data }) => {
+      setItems((prevState) => {
+        return prevState.map((item) =>
+          item.itemId === data.itemId ? data : item
+        );
+      });
+    });
+  };
+
   const deleteItem = (itemId) => {
     ItemApi.deleteItem(itemId).then(({ data }) =>
       setItems((prevState) => {
-        const newState = JSON.parse(JSON.stringify(prevState));
-        return newState.filter(({ itemId }) => itemId !== data.itemId);
+        return prevState.filter(({ itemId }) => itemId !== data.itemId);
       })
     );
   };
@@ -32,7 +41,7 @@ function Items() {
   return (
     <div>
       <Table
-        columns={getColumns(onNewItemClick, deleteItem)}
+        columns={getColumns(onNewItemClick, completeItem, deleteItem)}
         dataSource={items.map((item) => ({ ...item, key: item.itemId }))}
       />
       <CreateItemModal

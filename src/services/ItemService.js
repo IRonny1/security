@@ -9,6 +9,7 @@ class ItemService {
     const items = await Item.find({});
     const creatorIds = [...new Set(items.map(({ creatorId }) => creatorId))];
     const users = await User.find({ userId: { $in: creatorIds } });
+
     return items.map((item) => {
       const creator = users.find(({ userId }) => userId === item.creatorId);
       item.creator = `${creator.firstName} ${creator.lastName}`;
@@ -36,8 +37,11 @@ class ItemService {
     return new ItemDto(item);
   }
 
-  async updateItem(itemId, newValue) {
-    const item = await Item.findOneAndUpdate({ itemId }, { newValue });
+  async updateItem(userId, itemId, newValue) {
+    const item = await Item.findOneAndUpdate({ itemId }, newValue);
+    const user = await User.findOne({ userId });
+    item.creator = `${user.firstName} ${user.lastName}`;
+    item[Object.keys(newValue)[0]] = Object.values(newValue)[0];
     return new ItemDto(item);
   }
 
