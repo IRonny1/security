@@ -158,6 +158,14 @@ class UserService {
 
     return { ...tokens, user: userDto };
   }
+
+  async setRole(userId, role) {
+    const user = await User.findOneAndUpdate(
+      { userId: userId },
+      { roles: [role] }
+    );
+    return new UserDto(user);
+  }
 }
 
 module.exports = new UserService();

@@ -116,6 +116,17 @@ class UserController {
       next(e);
     }
   }
+
+  async setRole(req, res, next) {
+    try {
+      const { userId } = req.params;
+      const { role } = req.body;
+      const user = await userService.setRole(userId, role);
+      res.send(user);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 module.exports = new UserController();

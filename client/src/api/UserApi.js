@@ -3,6 +3,9 @@ import axios from "axios";
 import authorizedAxios from "./authorizedAxios";
 
 const UserApi = {
+  getAllUsers() {
+    return authorizedAxios.get(`/api/user/users`);
+  },
   getCurrentUser() {
     return authorizedAxios.get(`/api/user/me`);
   },
@@ -20,6 +23,9 @@ const UserApi = {
   },
   userLogout() {
     return authorizedAxios.get(`/api/user/logout`);
+  },
+  setUserRole(userId, role) {
+    return authorizedAxios.post(`/api/user/${userId}/setRole`, { role });
   },
 };
 
