@@ -19,8 +19,9 @@ authorizedAxios.interceptors.response.use(
     return config;
   },
   (err) => {
-    if (err.response.status === 401) {
+    if (err.response.status === 401 && err.config && !err.config._isRetry) {
       try {
+        err.config._isRetry = true;
         axios.post("/api/user/refresh").then((res) => {
           setJwtToken(res.data.accessToken);
           return axios.request(err.config);
