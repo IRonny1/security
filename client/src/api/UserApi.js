@@ -22,7 +22,7 @@ const UserApi = {
     return axios.post("/api/user/signUp/google", { token: token });
   },
   userLogout() {
-    return authorizedAxios.get(`/api/user/logout`);
+    return authorizedAxios.post(`/api/user/logOut`);
   },
   setUserRole(userId, role) {
     return authorizedAxios.post(`/api/user/${userId}/setRole`, { role });
