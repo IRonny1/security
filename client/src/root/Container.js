@@ -40,6 +40,7 @@ function Container() {
       setUserLoading(false);
     }
   }, [jwtToken, resetUser, setUser]);
+
   return !userLoading && <RoutesProvider />;
 }
 

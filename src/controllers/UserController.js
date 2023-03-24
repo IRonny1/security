@@ -111,7 +111,7 @@ class UserController {
         httpOnly: true,
       });
 
-      return res.json(user);
+      return res.json({ accessToken: user.accessToken });
     } catch (e) {
       next(e);
     }

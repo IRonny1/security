@@ -85,7 +85,7 @@ class UserService {
     const user = await User.findOne({ email: email });
 
     if (!user) {
-      throw HttpError.BadRequest("User not found.");
+      throw HttpError.NotFound("User with this email not found.");
     }
 
     const isPasswordValid = bcrypt.compareSync(password, user.password);

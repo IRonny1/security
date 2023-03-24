@@ -19,4 +19,8 @@ module.exports = class HttpError extends Error {
   static AccessDenied() {
     return new HttpError(403, "Access Denied.");
   }
+
+  static NotFound(message) {
+    return new HttpError(404, message);
+  }
 };
